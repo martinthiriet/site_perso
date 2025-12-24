@@ -1,0 +1,24 @@
+{% extends "base_encrypt.html" %} {% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/encrypt_style.css' %}"> {% endblock %}
+{% block title %} Encrypt/Decrypt Messages {% endblock %}
+{% block content %} 
+
+<div class="form">
+<form method="POST">{% csrf_token %}
+    <label>Message:</label>
+    <input type="text" name="message" required><br>
+    <label>Key:</label>
+    <input type="text" name="key" required><br>
+    <p>{{ message }}</p>
+    <button type="submit" name="action" value="encrypt">Encrypt</button>
+    <button type="submit" name="action" value="decrypt">Decrypt</button>
+</form>
+</div>
+
+<p>Proposition for an encryption key : {{ encrypt_key|safe }}</p>
+
+<a href="{% url 'source_code' %}" class="bottom-left-link">Source code</a>
+
+
+{% endblock %}
+

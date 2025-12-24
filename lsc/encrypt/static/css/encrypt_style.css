@@ -1,0 +1,56 @@
+.form {
+    max-width: 600px; /* Set your desired maximum width */
+    width: 100%;
+    padding: 20px;
+    background-color:  --form-bg-color;
+    text-align: left; /* Align text to the left */
+    margin: 0 auto; /* Center the form horizontally within its container */
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[name="action"][value="encrypt"] {
+    background-color: #28a745;
+    color: white;
+}
+
+button[name="action"][value="decrypt"] {
+    background-color: #dc3545;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+pre {
+    background-color: --form-bg-color;
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap; /* Allows wrapping within the pre tag */
+    font-family: 'Courier New', Courier, monospace;
+}
