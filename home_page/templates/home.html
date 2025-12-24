@@ -1,0 +1,66 @@
+{% load static %}
+<head>
+    <meta charset="utf-8" />
+    <title>Martin THIRIET - Home Page</title>
+    <meta name="author" content="Martin THIRIET"/>
+    <meta name="description" content="Home Page of Martin THIRIET"/>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  </head>
+  <h1 id="about-me">About me</h1>
+  <p><img alt="Picture of me" src="{{ MEDIA_URL }}image/martin.png" width=150 style="float: right; margin:5px; border-radius:50%;"></p>
+  <h2 id="contact">Contact</h2>
+  <ul>
+  <li>Martin THIRIET</li>
+  <li>You can contact me by mail <code>firstname.lastname@ens-paris-saclay.fr</code></li>
+  </ul>
+  <h2 id="schooling">Schooling</h2>
+  <ul>
+  <li>Student at <a href="https://universite-paris-saclay.fr/">Université Paris-Saclay</a> </li>
+  <li>Student at <a href="https://www.ip-paris.fr/">Institut Polytechnique de Paris</a></li>
+  <li>Student at <a href="https://ecoledesponts.fr/">École nationale des ponts et chaussées</a></li>
+  <li>Normalien at <a href="https://ens-paris-saclay.fr/">ENS Paris-Saclay</a></li>
+  </ul>
+  </ul>
+  <h2 id="Curriculum vitae">Curriculum vitae</h2>
+  <ul>
+      <p>
+       <li> <a href="{{ MEDIA_URL }}pdf/cv_martin_fr.pdf">Open French Cv as Pdf</a>. </li>
+       <li> <a href="{{ MEDIA_URL }}pdf/cv_martin_en.pdf">Open English Cv as Pdf</a>. </li>
+      </p>
+  </ul>
+  <h2 id="Master 1 Internship report and poster">Master 1 internship report and poster</h2>
+  <ul>
+      <p>
+       <li> <a href="{{ MEDIA_URL }}pdf/thiriet2023.pdf">Open report as Pdf</a>. </li>
+      </p>
+      <p>
+       <li> <a href="{{ MEDIA_URL }}pdf/posterthiriet2023.pdf">Open poster as Pdf </a>. </li>
+      </p>
+  </ul>
+  <h2 id="Master 2 Internship report">Master 2 internship report</h2>
+  <ul>
+      <p>
+       <li> <a href="{{ MEDIA_URL }}pdf//thiriet2024stage.pdf">Open report as Pdf</a>. </li>
+      </p>
+  </ul>
+  <h2 id="Personnal work">Personnal work</h2>
+  <ul>
+      <p>
+       <li> <a href="{% url 'musique' %}">Musique mixes</a>. </li>
+      </p>
+      <p>
+       <li> <a href="{% url 'login' %}">BrainMap (work in progess) </a>. </li>
+      </p>
+      <p>
+        <li> <a href="{% url 'camlist' %}">Les stats en Camenberts LSC (work in progess) </a>. </li>
+       </p>
+       <p>
+        <li> <a href="{% url 'pres_et' %}">Ear Tuner, a ear training tool (work in progess) </a>. </li>
+       </p>
+       <p>
+        <li> <a href="{% url 'home_encrypt' %}">Encrypt, a simple encryption tool (work in progess) </a>. </li>
+       </p>
+  </ul>
+  </ul>
+  
+  
