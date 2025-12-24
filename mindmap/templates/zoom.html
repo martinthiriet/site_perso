@@ -1,0 +1,40 @@
+{% extends "base_map.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/zoom_style.css' %}"> {% endblock %}
+{% block title %} {{ map_title }} {% endblock %}
+{% block content %} 
+<img id="center-image" src="" alt="Image Centrale">
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentTitle = urlParams.get('title') || '{{ map_title }}';
+    const currentowner = urlParams.get('owner') || '{{ owner }}';
+    
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Get the image name from the URL
+    const imageName = getQueryParam('id');
+
+    if (imageName) {
+        const centerImageElement = document.getElementById('center-image');
+        centerImageElement.src =`{{ MEDIA_URL }}compiled_data/{{ owner }}/{{ map_title }}/${imageName}.svg`; // Remplacez 'votre_dossier' par le chemin correct
+        console.log("Media Url")
+        console.log(`{{ MEDIA_URL }}`)
+        centerImageElement.alt = `id: ${imageName}`;
+    } else {
+        console.error('No image name specified in the URL.');
+    }
+
+    document.getElementById('center-image').addEventListener('click', function() {
+        const clickedImageName = getQueryParam('id');
+        if (clickedImageName) {
+            // Construct the URL correctly using template literals
+            window.location.href = `{% url 'mindmap' %}?id=${clickedImageName}&title=${currentTitle}&owner=${currentowner}`;
+        }
+    });
+
+</script>
+
+{% endblock %}

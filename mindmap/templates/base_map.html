@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrainMap</title>
+    <link rel="stylesheet" href="{% static 'css/base_style.css' %}">
+    {% block css %} {% endblock %}
+  </head>
+  <body>
+    <nav>
+      <a class="navbar-brand" href="#"> {% block title %} BrainMap {% endblock %}</a>
+      <ul class="navbar-links" id="navbarLinks">
+        <li><a href="{% url 'user' %}">Home</a></li>
+        <li><a id="compile_full_graph_button" >Rebuild all the map</a></li>
+      </ul>
+    </nav>
+    <div class="container">{% block content %} {% endblock %}</div>
+    <script>
+      const currentownerbase = urlParams.get('owner') || '{{ owner }}';
+      const currentTitlebase = urlParams.get('title') || 'default_title';
+
+      function toggleMenu() {
+        const navbarLinks = document.getElementById("navbarLinks");
+        navbarLinks.classList.toggle("show");
+      }
+
+      document.getElementById('compile_full_graph_button').addEventListener('click', async() => {
+        const centerImageId = document.getElementById('center-image').src.split('/').pop().replace('.svg', '');
+        const confirmation = confirm('Are you sure you want to rebuid the graph?');
+        if (!confirmation) return; // Cancel if the user presses "Cancel"
+
+        try {
+            const response = await fetch(`{% url 'rebuild_all' %}?id=${centerImageId}&title=${currentTitlebase}&owner=${currentownerbase}`, {
+            });
+
+            if (response.ok) {
+                window.location.href = `{% url 'mindmap' %}?id=${centerImageId}&title=${currentTitlebase}&owner=${currentownerbase}`; // Redirect to home or main page
+            } else {
+                const result = await response.json();
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Request failed: ' + error);
+        }
+      });
+
+    </script>
+  </body>
+</html>

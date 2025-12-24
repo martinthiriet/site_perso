@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/add_edit_style.css' %}"> {% endblock %}
+{% block title %} {{ map_title }} {% endblock %}
+{% block content %} 
+
+
+<h1>Adding new node after : <span id="image-id">{{ image_id }}</span></h1>
+
+<form id="user-input-form">
+    <!-- Title Input -->
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" value="" required>
+
+    <!-- Core Input -->
+    <label for="core">Core:</label>
+    <textarea id="core" name="core" rows="8" ></textarea>
+
+    <!-- Checkbox Input -->
+    <label for="checkbox">Latex compiler: <input type="checkbox" id="checkbox" name="checkbox" checked></label>
+
+    <!-- Submit Button -->
+    <div class="button-container">
+        <button id="back_button" type="button">Back</button>
+        <button type="submit">Compile</button>
+    </div>
+</form>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentTitle = urlParams.get('title') || 'default_title';
+    const currentowner = urlParams.get('owner') || '{{ owner }}';
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+        // Function to update the image ID in the HTML
+    function updateImageId() {
+        const imageId = getQueryParam('id');
+        if (imageId) {
+            // Update the innerText of the element with ID 'image-id'
+            document.getElementById('image-id').innerText = imageId;
+        } else {
+            console.error('No image ID specified in the URL.');
+        }
+    }
+
+        // Run the update function when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', updateImageId);
+
+    document.getElementById('user-input-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const imageId = document.getElementById('image-id').innerText.trim();
+        const title = document.getElementById('title').value;
+        const core = document.getElementById('core').value;
+        const latex_compiler = document.getElementById('checkbox').checked;
+
+        try {
+            const response = await fetch(`{% url 'compile_add' %}?id=${imageId}&title=${currentTitle}&owner=${currentowner}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: imageId, title, core, latex_compiler })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                window.location.href = `{% url 'mindmap' %}?id=${imageId}&title=${currentTitle}&owner=${currentowner}`;
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Request failed: ' + error);
+        }
+    });
+
+    document.getElementById('back_button').addEventListener('click', () => {
+    const imageId = document.getElementById('image-id').innerText.trim();
+
+    window.location.href = `{% url 'mindmap' %}?id=${imageId}&title=${currentTitle}&owner=${currentowner}`;
+    });
+</script>
+
+{% endblock %}

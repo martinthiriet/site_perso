@@ -1,0 +1,16 @@
+<!-- myapp/templates/registration/logout.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/account_style.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Logged out</h2>
+        <p>You have been successfully logged out. <a href="{% url 'login' %}">Log in again</a></p>
+    </div>
+</body>
+</html>
+

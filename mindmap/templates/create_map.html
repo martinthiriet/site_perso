@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/add_edit_style.css' %}"> {% endblock %}
+{% block title %} Your Account {% endblock %}
+{% block content %} 
+
+
+<h1>Create a new mind map </h1>
+
+<form id="user-input-form" method="post" action="{% url 'create_map' %}">
+    {% csrf_token %}
+    <!-- Title Input -->
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" value="" required>
+
+    <label for="checkbox">Public : <input type="checkbox" id="checkbox" name="checkbox" checked></label>
+
+    <!-- Submit Button -->
+    <div class="button-container">
+        <button id="back_button" type="button">Back</button>
+        <button type="submit">Create Map</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('back_button').addEventListener('click', () => {
+
+    window.location.href = "{% url 'user' %}";
+    });
+</script>
+
+{% endblock %}

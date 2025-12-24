@@ -1,0 +1,235 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+  --part1-bg-color: #f9f9f9;
+  --part2-bg-color: var(--bg-color);
+  --part3-bg-color: #f9f9f9;
+  --divider-bg-color: #ffffff;
+  --image-border-color: #000000;
+  --image-filter: none; /* Default filter for images */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Full height of the viewport */
+}
+
+.part {
+    flex: 1;
+    display: flex;
+    padding: 10px;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    height: 100%;
+}
+
+.part1 {
+    background-color: var(--part1-bg-color);
+    padding-bottom: 65px;
+}
+
+.part2 {
+    background-color: var(--part2-bg-color);
+    padding-bottom: 65px;
+}
+
+.part3 {
+    background-color: var(--part3-bg-color);
+    padding-bottom: 65px;
+}
+
+.divider {
+    width: 2px;
+    background-color: var(--divider-bg-color);
+}
+
+/* Scrollable container */
+.image-wrapper {
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    justify-content: flex-start; /* Start at the top */
+    align-items: center; /* Center horizontally */
+    padding-top: var(--center-image-offset, 0);
+}
+
+.image-wrapper img {
+    width: auto; /* Allow width to adjust based on content */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Prevent extra space below the image */
+    border: 2px solid var(--image-border-color);
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: none; /* Remove shading */
+    filter: var(--image-filter); /* Apply filter for images */
+    max-width: 100%; /* Ensure images do not exceed container width */
+    margin-bottom: 5px; /* Add padding between images */
+}
+
+.previous-image img {
+    max-width: 100%; /* Image scales with container */
+    transition: transform 0.3s ease, transform-origin 0.3s ease;
+}
+
+.next-node-image {
+    object-fit: contain;
+    cursor: pointer;
+    max-width: 100%; /* Ensure images do not exceed container width */
+    height: auto; /* Maintain aspect ratio */
+    width: auto; /* Allow width to adjust based on content */
+    margin-bottom: 30px;
+}
+
+/* Bottom Center Container */
+.bottom-center-2, .bottom-center-1, .bottom-right {
+    position: fixed;
+    bottom: 20px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.bottom-center-2 {
+    left: 55.555%;
+    transform: translateX(-50%);
+}
+
+.bottom-center-1 {
+    left: 44.44444%;
+    transform: translateX(-50%);
+}
+
+.bottom-right {
+    left: 83.33333%;
+    transform: translateX(-50%);
+}
+
+/* Button Styling */
+.redirect-button {
+    padding: 10px 20px;
+    font-size: 15px; /* Adjust font size relative to viewport width */
+    color: var(--button-text-color);
+    background-color: var(--button-bg-color);
+    border: 2px solid var(--button-border-color);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: none; /* Remove shading */
+    width: 10vw; /* Set button width as a percentage of the viewport width */
+    max-width: 120px; /* Set a maximum width to prevent the button from becoming too large */
+    min-width: 50px; /* Set a minimum width to prevent the button from becoming too small */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+}
+
+
+.redirect-button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --part1-bg-color: #212121;
+    --part2-bg-color: var(--bg-color);
+    --part3-bg-color: #212121;
+    --divider-bg-color: #333333;
+    --image-filter: invert(1); /* Invert colors for images in dark mode */
+  }
+}
+
+/* Vertical mode styles for smartphones */
+@media (max-width: 600px) and (orientation: portrait) {
+    .container {
+        display: flex;
+        height: 100vh; /* Full height of the viewport */
+        flex-direction: column; /* Stack parts vertically */
+    }
+
+    .part1 {
+        padding-bottom: 10px;
+    }
+    
+    .part2 {
+        padding-bottom: 10px;
+    }
+    
+    .part3 {
+        padding-bottom: 80px;
+    }
+    
+
+    .divider {
+        height: 2px; /* Change divider to horizontal */
+        width: 100%; /* Full width */
+    }
+
+
+    /* Align buttons horizontally at the bottom */
+    .button-container {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .button-container .redirect-button {
+        margin: 0 10px; /* Add some space between buttons */
+    }   
+
+    .bottom-center-2 {
+        left: 20%; /* 30% from the left */
+        transform: translateX(-50%);
+    }
+
+    .bottom-center-1 {
+        left: 50%; /* 50% from the left */
+        transform: translateX(-50%);
+    }
+
+    .bottom-right {
+        left: 80%; /* 70% from the left */
+        transform: translateX(-50%);
+    }
+
+    .redirect-button {
+        padding: 10px 20px;
+        font-size: 13px; /* Adjust font size relative to viewport width */
+        color: var(--button-text-color);
+        background-color: var(--button-bg-color);
+        border: 2px solid var(--button-border-color);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: none; /* Remove shading */
+        width: 10vw; /* Set button width as a percentage of the viewport width */
+        max-width: 120px; /* Set a maximum width to prevent the button from becoming too large */
+        min-width: 90px; /* Set a minimum width to prevent the button from becoming too small */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden; /* Hide overflow text */
+        text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    }
+    
+}

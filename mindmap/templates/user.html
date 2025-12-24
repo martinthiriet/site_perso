@@ -1,0 +1,71 @@
+<!-- mindmap/templates/mindmap/account_page.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/user_page_style.css' %}">
+{% endblock %}
+
+{% block title %}
+    Your Account : {{ user }}
+{% endblock %}
+
+{% block content %}
+    <h2>Available MindMaps</h2>
+    <ul class="object-list">
+        {% for obj in user_objects %}
+            <li class="object-item">
+                <h3>
+                    <a href="{% url 'mindmap' %}?id=1&title={{ obj.title }}&owner={{ obj.owner }}">
+                        {{ obj.title }}
+                    </a>
+                </h3>
+                <button class="edit-button" data-id="{{ obj.id }}" data-title="{{ obj.title }}" >Edit</button>
+                <button class="delete-button" data-id="{{ obj.id }}" data-title="{{ obj.title }}">Delete</button>
+            </li>
+        {% empty %}
+            <li>No objects available.</li>
+        {% endfor %}
+
+        <div class="bottom-center">
+            <a class="redirect-button" id="add_map_button" href="{% url 'create_map' %}">Create a New Map</a>
+        </div>
+    </ul>
+<script>
+    document.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const objTitle = this.getAttribute('data-title'); // Correct attribute
+            if (confirm(`Are you sure you want to delete "${objTitle}"?`)) {
+                // Send a DELETE request to the server
+                fetch(`{% url 'delete_map' %}?map_name=${objTitle}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the item from the DOM
+                        this.closest('.object-item').remove();
+                    } else {
+                        alert('Error deleting the object.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the object.');
+                });
+            }
+        });
+    });
+
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const objTitle = this.getAttribute('data-title'); // Correct attribute
+            window.location.href = `{% url 'edit_map' %}?map_name=${objTitle}`;
+        });
+    });
+</script>
+{% endblock %}
+

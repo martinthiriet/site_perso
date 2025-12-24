@@ -1,0 +1,119 @@
+/* myapp/static/css/styles.css */
+
+:root {
+    --bg-color: #ffffff;
+    --text-color: #343a40;
+    --button-bg-color: #4CAF50;
+    --button-hover-bg-color: #45a049;
+    --link-color: #007BFF;
+    --link-hover-color: #0056b3;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height for vertical centering */
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #343a40;
+    text-align: left;
+}
+
+h2 {
+    color: var(--text-color);
+    text-align: center;
+}
+
+form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    margin-left:15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.requirements {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+    text-align: left;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    height: 50px; /* Full viewport height for vertical centering */
+}
+
+button {
+    background-color: var(--button-bg-color);
+    color: white;
+    width: 150px;
+    padding: 10px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+p {
+    text-align: center;
+    color: var(--text-color);
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--link-hover-color);
+}
+
+input {
+    width: 100%; /* Make inputs take full width of the container */
+    max-width: 350px; /* Ensure consistent max width */
+    height: 40px; /* Adjust height for better spacing */
+    padding: 10px; /* Adjust padding for better spacing */
+    margin: 10px 0;
+    font-size: 16px; /* Adjust font size for better appearance */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1e1e1e;
+        --text-color: #e0e0e0;
+        --button-bg-color: #4CAF50;
+        --button-hover-bg-color: #45a049;
+        --link-color: #007BFF;
+        --link-hover-color: #0056b3;
+    }
+}

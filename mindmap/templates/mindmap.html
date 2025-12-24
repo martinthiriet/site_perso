@@ -1,0 +1,264 @@
+{% extends "base_map.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/mindmap_style.css' %}"> {% endblock %}
+{% block title %} {{ map_title }} {% endblock %}
+{% block content %} 
+<div class="container">
+    <div class="part part1">
+        <div class="image-wrapper previous-image">
+            <img id="previous-image" src="" alt="">
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="part part2">
+        <div class="image-wrapper center-image">
+            <img id="center-image" src='{{ MEDIA_URL }}compiled_data/{{ owner }}/{{ map_title }}/1.svg' alt="Center Image">
+        </div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="part part3">
+        <div class="image-wrapper next-list-image" id="next-image-list">
+            <!-- Right-side images will be dynamically loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const previousImageElement = document.getElementById('previous-image');
+    const centerImageElement = document.getElementById('center-image');
+    
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Get the image name from the URL
+    const urlImageName = getQueryParam('id');
+
+
+    async function loadImageData() {
+    // function that load the data from map path, it gives the relation between the differents images
+        const mapPath = JSON.parse('{{ map_path|escapejs }}');
+        return mapPath
+    }
+
+    
+    function getCenterImageName() {
+    // function that returns the name of the center image of the screen in the center column
+        if (centerImageElement && centerImageElement.src) {
+            // Extract the image name from the `src` attribute
+            const centerImageSrc = centerImageElement.src;
+            const centerImageName = centerImageSrc.split('/').pop().replace('.svg', '');
+            return centerImageName;
+        } else {
+            console.error('Center image not found or missing src attribute.');
+            return null;
+        }
+    }
+
+
+    async function findMatchingLine() {
+    // function that returns if it works the name of the previous image and the name of the nexts images as a list 
+        const textFileContent = await loadImageData(); // Wait for the Promise to resolve
+        const centerImageName = getCenterImageName(); // Get the center image name
+
+        // Iterate through the lines (textFileContent is already an array of lines in this case)
+        const lines = textFileContent.split('\n').filter(Boolean); // Split into lines and remove empty ones
+
+        for (const line of lines) {
+            try {
+                const parsedLine = line.replace(/'/g, '').replace(/\[/g, '').replace(/\]/g, '').replace(/ /g, '').replace(/\r/g,'').split(',')
+            
+                // Check if the second element matches the center image name
+                if (parsedLine[1] === centerImageName) {
+                    return  {
+                        prev: parsedLine[0], // The first element
+                        next: parsedLine.slice(2), // Array starting from the third element
+                    };
+                }
+            } catch (error) {
+                console.error("Error parsing line:", line, error);
+            }
+        }
+        console.log("No matching line found for:", centerImageName);
+        return null; // Return null if no matching line is found
+    }
+
+    
+
+    async function DisplayPrevimage() {
+    // takes the name of the midle image and displays the previous image on the left side 
+        prevnext_img = await findMatchingLine();
+        if (prevnext_img.prev && prevnext_img.prev !== "None") {
+            previousImageElement.src = `{{ MEDIA_URL }}compiled_data/{{ owner }}/{{ map_title }}/title-${prevnext_img.prev}.svg`;
+            previousImageElement.style.display = '';
+        } else {
+            previousImageElement.style.display = 'none';
+        }
+    }
+
+    async function DisplayNextImages() {
+    // this functions displays the list of the nexts images in funciton of the name of the center image
+        const rightImageList = document.getElementById('next-image-list'); // Get the right images container
+        rightImageList.innerHTML = ''; // Clear existing content
+
+        let matchingData = await findMatchingLine(); // Get the previous and next images
+        
+        if (matchingData && matchingData.next.length > 0 && (matchingData.next.length  !== 1 ||  matchingData.next[0] !== '' ) ) {
+            matchingData.next.forEach(imageName => {
+                let imgElement = document.createElement('img');
+                imgElement.src = `{{ MEDIA_URL }}compiled_data/{{ owner }}/{{ map_title }}/title-${imageName}.svg`; // Construct image path
+                imgElement.alt = `Next Image: ${imageName}`;
+                imgElement.classList.add('right-image'); // Optional: Add a class for styling
+                rightImageList.style.display = '';
+                // Append the image to the right image list
+                rightImageList.appendChild(imgElement);
+            });
+        } else {
+            rightImageList.style.display = 'none';// Display fallback text
+        }
+    }
+
+    function changeCenterImage(newImageName) {
+        const centerImageElement = document.getElementById('center-image');
+
+        if (centerImageElement) {
+            centerImageElement.src = `{{ MEDIA_URL }}compiled_data/{{ owner }}/{{ map_title }}/${newImageName}.svg`; // Update image source
+
+            // Get the current title from the URL or use a default
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentTitle = urlParams.get('title') || '{{ map_title }}';
+            const currentowner = urlParams.get('owner') || '{{ owner }}';
+
+            // Update the URL with the new image name
+            const newUrl = `${window.location.pathname}?id=${newImageName}&title=${currentTitle}&owner=${currentowner}`;
+            window.history.pushState({ imageName: newImageName }, '', newUrl);
+        } else {
+            console.error('Center image element not found.');
+        }
+    }
+
+    function getClickedImageName(event) {
+        const clickedElement = event.target; // Get the clicked element
+
+        if (clickedElement.tagName.toLowerCase() === 'img') {
+            const imageSrc = clickedElement.src; // Get the image source URL
+            const imageName = imageSrc.split('/').pop().replace('.svg', '').slice(6); // Extract the image name
+            return imageName;
+        } else {
+            console.warn('Clicked element is not an image.');
+            return null;
+        }
+    }
+
+
+
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.imageName) {
+            changeCenterImage(event.state.imageName);
+            DisplayPrevimage();
+            DisplayNextImages();
+        }
+    });
+
+
+    document.getElementById('next-image-list').addEventListener('click', (event) => {
+        const clickedImageName = getClickedImageName(event);
+        if (clickedImageName) {
+            changeCenterImage(clickedImageName)
+            DisplayPrevimage();
+            DisplayNextImages();
+        }
+    });
+
+    document.getElementById('previous-image').addEventListener('click', (event) => {
+        const clickedImageName = getClickedImageName(event);
+        if (clickedImageName) {
+            changeCenterImage(clickedImageName)
+            DisplayPrevimage();
+            DisplayNextImages();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        if (urlImageName) {
+            changeCenterImage(urlImageName);
+        }
+        DisplayPrevimage();
+        DisplayNextImages();
+    });
+
+    document.getElementById('center-image').addEventListener('click', function() {
+        const clickedImageName = getQueryParam('id');
+        if (clickedImageName) {
+            // Construct the URL correctly using template literals
+            window.location.href = `{% url 'zoom' %}?id=${clickedImageName}&title=${currentTitle}&owner=${currentowner}`;
+        }
+    });
+
+    DisplayPrevimage();
+    DisplayNextImages();
+
+</script>
+
+<div class="button-container">
+    <div class="bottom-center-1">
+        <button class="redirect-button" id="edit_button">Edit</button>
+    </div>
+
+    <div class="bottom-center-2">
+        <button class="redirect-button" id="delete_button">Delete</button>
+    </div>
+
+    <div class="bottom-right">
+        <button class="redirect-button" id="add_button">Add</button>
+    </div>
+</div>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentTitle = urlParams.get('title') || 'default_title';
+    const currentowner = urlParams.get('owner') || '{{ owner }}';
+
+    document.getElementById('edit_button').addEventListener('click', () => {
+        const centerImageId = document.getElementById('center-image').src.split('/').pop().replace('.svg', '');
+        console.log('Redirecting to Edit with ID:', centerImageId);
+
+        window.location.href = `{% url 'edit_node' %}?id=${centerImageId}&title=${currentTitle}&owner=${currentowner}`;
+    });
+
+    document.getElementById('add_button').addEventListener('click', () => {
+        const centerImageId = document.getElementById('center-image').src.split('/').pop().replace('.svg', '');
+        console.log('Redirecting to Add with ID:', centerImageId);
+
+        window.location.href = `{% url 'add_node' %}?id=${centerImageId}&title=${currentTitle}&owner=${currentowner}`;
+    });
+
+    document.getElementById('delete_button').addEventListener('click', async() => {
+        const centerImageId = document.getElementById('center-image').src.split('/').pop().replace('.svg', '');
+        let newImageId =   centerImageId.substring(0,  centerImageId.lastIndexOf('_'));
+        const confirmation = confirm('Are you sure you want to delete this item?');
+        
+        if (!confirmation) return; // Cancel if the user presses "Cancel"
+
+        try {
+            const response = await fetch(`{% url 'delete_node' %}?id=${newImageId}&title=${currentTitle}&owner=${currentowner}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: centerImageId  })
+            });
+
+            if (response.ok) {
+                window.location.href = `{% url 'mindmap' %}?id=${newImageId}&title=${currentTitle}&owner=${currentowner}`; // Redirect to home or main page
+            } else {
+                const result = await response.json();
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Request failed: ' + error);
+        }
+    });
+
+</script>
+{% endblock %}

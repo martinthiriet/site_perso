@@ -1,0 +1,14 @@
+img {
+    width: 100vw; /* Full viewport width */
+    height: auto; /* Maintain aspect ratio */
+    max-width: none; /* Allow overflow on zoom */
+    display: block; /* Ensure the image behaves as a block element */
+    filter: var(--image-filter, none); /* Apply filter for images, default to none */
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --image-filter: invert(1); /* Invert colors for images in dark mode */
+  }
+}
