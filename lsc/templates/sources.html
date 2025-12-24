@@ -1,0 +1,12 @@
+{% extends "basepie.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/camlist_style.css' %}"> {% endblock %}
+{% block title %} Sources : {{ title }} {% endblock %}
+{% block source %}  <li><a href="{% url 'camplot' %}?id={{ id }}">Back to plot</a></li> {% endblock %}
+{% block content %} 
+
+<p>
+{{ sources|linebreaksbr }}
+</p>
+
+{% endblock %}
+

@@ -1,0 +1,159 @@
+{% extends "basepie.html" %} {% load static %}
+{% block css %} <link rel="stylesheet" href="{% static 'css/camplot_style.css' %}"> {% endblock %}
+{% block title %} {{ camtitle }} {% endblock %}
+{% block source %}  <li><a href="{% url 'sources' %}?id={{ id }}">Sources</a></li> {% endblock %}
+{% block content %} 
+
+
+<div id="container"></div>
+
+
+<script src="{% static 'js/anychart-core.min.js' %}"></script>
+<script src="{% static 'js/anychart-pie.min.js' %}"></script>
+
+<script id="title-data" type="application/json">
+    {{ title_list|safe }}
+</script>
+
+<script id="description-data" type="application/json">
+    {{ description_list|safe }}
+</script>
+
+<script type="text/javascript">
+    anychart.onDocumentReady(function () {
+        function cleanString(str) {
+            return str.replace(/"/g, '').replace(/\n/g, '').trim();
+        }
+
+        const data = '{{ val_list }}'.replace(/[\[\]]/g, '').split(',').map(Number);
+        const total = data.reduce((sum, value) => sum + value, 0);  // Calculate total sum
+        const unit = '{{ unit|safe }}'.replace(/"/g, '');
+        const labels = document.getElementById('title-data').textContent.split('<#>').map(cleanString);
+        const descriptions = document.getElementById('description-data').textContent.split('<#>').map(cleanString);
+        const links = '{{ link_list }}'.replace(/&quot;/g, '').replace(/[\[\]]/g, '').split(',');
+        const baselink = "{% url 'camplot' %}";
+        let fulllinks = links.map(query => baselink + query.trim());
+
+        const colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6347', '#32CD32', '#8A2BE2', '#FFD700', '#FF4500', '#00BFFF', '#FF1493', '#ADFF2F', '#FF69B4', '#7B68EE', '#FF8C00', '#20B2AA', '#FF6347', '#8B4513', '#FFD700', '#FF69B4', '#FF4500', '#00BFFF', '#FF1493', '#ADFF2F', '#FF6347', '#8A2BE2', '#FFD700', '#FF69B4', '#FF4500', '#00BFFF', '#FF1493', '#ADFF2F', '#FF6347', '#8A2BE2', '#FFD700', '#FF69B4', '#FF4500', '#00BFFF', '#FF1493', '#ADFF2F', '#FF6347', '#8A2BE2', '#FFD700', '#FF69B4', '#FF4500', '#00BFFF', '#FF1493', '#ADFF2F', '#FF6347', '#8A2BE2', '#FFD700', '#FF69B4'
+        ];
+
+        function getColors(numColors) {
+            return colorPalette.slice(0, numColors);
+        }
+
+        function splitIntoChunks(str, chunkSize = 100) {
+            const chunks = [];
+            let start = 0;
+
+            while (start < str.length) {
+                let end = start + chunkSize;
+
+                // Ensure we don't split in the middle of a word
+                if (end < str.length && str[end] !== ' ') {
+                    end = str.lastIndexOf(' ', end);
+                }
+
+                // If no space is found, split at chunkSize
+                if (end === -1 || end <= start) {
+                    end = start + chunkSize;
+                }
+
+                chunks.push(str.slice(start, end));
+                start = end;
+            }
+
+            return chunks.join("\n");  // Join with newline
+        }
+
+
+        const formattedDescriptions = descriptions.map(desc => splitIntoChunks(desc, 75)); // Wrap descriptions
+        const formattedTitles = labels.map(title => splitIntoChunks(title, 25)); // Wrap titles
+
+        const chartData = formattedTitles.slice(0, data.length).map((label, index) => [
+            label,  // Truncated and wrapped title
+            data[index],
+            formattedDescriptions[index], // Wrapped description
+            unit,
+            (data[index] / total * 100).toFixed(1) // Calculate percentage
+        ]);
+
+        // Create a data set with the chart data
+        let dataSet = anychart.data.set(chartData);
+
+        // Map the data
+        let seriesData = dataSet.mapAs({ x: 0, value: 1, description: 2, unit: 3, percentage: 4 });
+
+        // Create a pie chart
+        let chart = anychart.pie(seriesData);
+
+        // Create a custom palette
+        let palette = anychart.palettes.distinctColors();
+        palette.items(getColors(chartData.length).map(color => ({ color: color })));
+        chart.palette(palette);
+
+        const rootStyles = getComputedStyle(document.documentElement);
+        const backgroundColor = rootStyles.getPropertyValue('--background-color').trim();
+        const textColor = rootStyles.getPropertyValue('--text-color').trim();
+
+        // Configure the labels and legend
+        chart.background().fill(backgroundColor);
+        chart.labels().fontColor(textColor);
+        chart.legend().fontColor(textColor);
+
+        // Configure the labels to include percentage
+        chart.labels()
+            .format("{%x} : {%value}{%unit} ({%percentage}%)")
+            .fontSize(14)
+            .position("outside");
+
+        // Disable the chart legend
+        chart.legend(false);
+
+        function getResponsiveFontSize() {
+            if (window.innerWidth < 500) {
+                return 8; // Small screens
+            } else if (window.innerWidth < 800) {
+                return 14; // Medium screens
+            }
+            return 20; // Large screens
+        }
+
+    // Configure labels
+    chart.labels()
+        .format("{%x}  \n {%value}{%unit}  ({%percentage}%)")
+        .fontSize(getResponsiveFontSize())
+        .position("outside");
+
+    // Configure tooltip
+    chart.tooltip()
+        .format("{%description}")
+        .fontSize(getResponsiveFontSize());
+
+    // Adjust on window resize
+    window.addEventListener('resize', function() {
+        let newSize = getResponsiveFontSize();
+        chart.labels().fontSize(newSize);
+        chart.tooltip().fontSize(newSize);
+        chart.draw();  // Redraw chart with new font size
+    });
+
+        // Set chart title text settings
+        chart.title(false);
+
+        // Set container id for the chart
+        chart.container("container");
+        chart.selected().explode(0); 
+
+        // Initiate chart drawing
+        chart.draw();
+
+        // Add click event to redirect to links
+        chart.listen("pointClick", function (e) {
+            const index = e.pointIndex;
+            window.location.href = fulllinks[index];
+        });
+    });
+</script>
+
+{% endblock %}
