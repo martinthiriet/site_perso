@@ -1,0 +1,48 @@
+{% extends "baseet.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/getsong_style.css' %}">
+{% endblock %}
+
+{% block title %}
+EarTuner
+{% endblock %}
+
+{% block content %}
+
+<script>
+    window.onload = function() {
+        // Create a hidden link for the audio download
+        var audioLink = document.createElement('a');
+        audioLink.href = '{{ MEDIA_URL }}et_songs/{{ audio_name }}' ;
+        audioLink.download = 'filtered_audio.mp3';
+        document.body.appendChild(audioLink);
+        audioLink.click();
+        document.body.removeChild(audioLink);
+
+        // Create a hidden link for the image download
+        var imageLink = document.createElement('a');
+        imageLink.href = '{{ MEDIA_URL }}et_songs/{{ image_name }}';
+        imageLink.download = 'filtered_image.png';
+        document.body.appendChild(imageLink);
+        imageLink.click();
+        document.body.removeChild(imageLink);
+    }
+
+</script>
+
+<p>If the downloads do not start automatically, click the links below:</p>
+<div class="form-group">
+<p><a href='{{ MEDIA_URL }}et_songs/{{ audio_name }}' download>Download Audio</a></p>
+<p><a href='{{ MEDIA_URL }}et_songs/{{ image_name }}' download>Download Image</a></p>
+<button id="back_button" type="button">Back</button>
+</div>
+
+<script>
+document.getElementById('back_button').addEventListener('click', () => {
+    window.location.href = `{% url 'getsong' %}`;
+    });
+</script>
+
+{% endblock %}

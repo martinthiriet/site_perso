@@ -1,0 +1,41 @@
+{% extends "baseet.html" %}
+{% load static %}
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/getsong_style.css' %}">
+{% endblock %}
+{% block title %} EarTuner {% endblock %}
+{% block content %} 
+
+<h1>About EarTuner</h1>  
+<h2>What is EarTuner?</h2>
+<p>
+EarTuner is a web app designed to train your ears. It lets you upload a song (up to 50MB) to the website. You can then choose the desired difficulty level. Once this is done, you can click on "Apply Filter" — your audio file will be processed based on the selected difficulty. After processing (which may take a short while), you can download both the filtered audio clip and an image showing the filter that was applied.
+</p>
+<p>
+The objective is to upload a song you know well, listen to the filtered version, and try to guess which filter was applied. You can then check your answer using the image of the equalizer that was used.
+</p>
+
+<h2>An Example of EarTuner</h2>
+<p>Here is an example of a filter applied to a song:</p>
+<p style="text-align: center;">
+  <img src="{{ MEDIA_URL }}image/et_exemple.png" style="width: 100%;">
+</p> 
+
+<h2>Technical Specifications</h2>
+<p>
+The difficulty level affects several parameters. First, it determines the number of filters applied to the song, ranging from 1 to 6. It also affects the gain values, the easier the level, the larger the gain range, which can go from -20 dB to +20 dB.
+</p>
+<p>
+The quality factor (Q) is independent of the difficulty level and ranges from 0.7 to 10.
+</p>
+<p>
+Currently, the file is converted to MP3 format for filtering to optimize performance.
+</p>
+
+<h2>Try EarTuner</h2>
+<div style="text-align: center;">
+  <a href="{% url 'getsong' %}" class="btn-like">Try EarTuner</a>
+</div>
+
+
+{% endblock %}

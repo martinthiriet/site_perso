@@ -1,0 +1,50 @@
+{% extends "baseet.html" %}
+{% load static %}
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/getsong_style.css' %}">
+{% endblock %}
+{% block title %} EarTuner {% endblock %}
+{% block content %} 
+
+<div class="container">
+    <h2>Audio File Uploader with Sound Effects</h2>
+    <form action="{% url 'getsong' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="audio_file">Upload Audio File:</label><br>
+            <label class="btn-like">
+                <div id="file-name" style="margin-top: 8px; color: white;">No file selected</div>
+                <input type="file" id="audio_file" name="audio_file" accept=".mp3,.wav,.m4a" required onchange="updateFileName(this)">
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="difficulty">Difficulty:</label>
+            <input type="range" id="difficulty" name="difficulty" min="0" max="50" step="1" value="25">
+        </div>
+        <div class="form-group">
+            <button class="btn-like" type="submit" id="submit-button" disabled>Apply Filter</button>
+        </div>
+    </form>    
+</div>
+
+<script>
+    function updateFileName(input) {
+        const fileNameSpan = document.getElementById('file-name');
+        const submitButton = document.getElementById('submit-button');
+
+        if (input.files.length > 0) {
+            fileNameSpan.textContent = input.files[0].name;
+            submitButton.disabled = false;
+        } else {
+            fileNameSpan.textContent = "No file selected";
+            submitButton.disabled = true;
+        }
+    }
+
+    // Also disable the button on page load (just in case)
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('submit-button').disabled = true;
+    });
+</script>
+
+{% endblock %}
