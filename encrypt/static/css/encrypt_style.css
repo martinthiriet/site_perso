@@ -20,6 +20,15 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: vertical; /* Allows vertical resizing only */
+}
+
 button {
     padding: 10px 20px;
     margin: 5px;
